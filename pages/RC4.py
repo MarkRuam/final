@@ -100,6 +100,7 @@ def main():
                     elif file_type == 'jpg' or file_type == 'png':
                         st.image(decrypted_file_contents)
                     else:
+                        st.error(file_type)
                         st.error("Unsupported file type.")
                 except base64.binascii.Error as e:
                     st.error("Invalid base64 encoded file. Please check the input and try again.")
