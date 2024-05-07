@@ -83,25 +83,10 @@ def main():
                 try:
                     decrypted_file_contents_bytes = base64.b64decode(file_contents)
                     decrypted_file_contents = rc4_decrypt(decrypted_file_contents_bytes, derived_key)
-                    file_type = file.type.split('/')[-1]  # get the file type
-                    if file_type == 'plain':
-                        try:
-                            decrypted_text = decrypted_file_contents.decode()
-                            st.text_area("Decrypted File", value=decrypted_text, height=200)
-                        except UnicodeDecodeError:
-                            st.error("Decryption produced binary data, unable to decode as text.")
-                    elif file_type == 'pdf':
-                        st.download_button(
-                            label="Download Decrypted File",
-                            data=BytesIO(decrypted_file_contents),
-                            file_name="decrypted_file.pdf",
-                            mime="application/pdf"
-                        )
-                    elif file_type == 'jpg' or file_type == 'png':
-                        st.image(decrypted_file_contents)
-                    else:
-                        st.error(file_type)
-                        st.error("Unsupported file type.")
+                    try:
+                        st.text_area("Decrypted File", value=decrypted_file_contents.decode(), height=200)
+                    except UnicodeDecodeError:
+                        st.error("Decryption produced binary data, unable to decode as text.")
                 except base64.binascii.Error as e:
                     st.error("Invalid base64 encoded file. Please check the input and try again.")
 
