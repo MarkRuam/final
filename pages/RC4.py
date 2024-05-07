@@ -84,7 +84,7 @@ def main():
                     decrypted_file_contents_bytes = base64.b64decode(file_contents)
                     decrypted_file_contents = rc4_decrypt(decrypted_file_contents_bytes, derived_key)
                     file_type = file.type.split('/')[-1]  # get the file type
-                    if file_type == 'txt':
+                    if file_type == 'plain':
                         try:
                             decrypted_text = decrypted_file_contents.decode()
                             st.text_area("Decrypted File", value=decrypted_text, height=200)
