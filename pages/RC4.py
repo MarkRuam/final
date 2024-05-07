@@ -69,26 +69,41 @@ def main():
                         file_name="encrypted_file.txt",
                         mime="text/plain"
                     )
+                    
     elif mode == "Decrypt File":
-        file = st.file_uploader("Upload File", type=["txt", "pdf"])
-        if st.button(mode):
-            if not key:
-                st.error("Please enter a key")
-            elif not file:
-                st.error("Please upload a file")
-            else:
-                file_contents = file.read()
-                derived_key = PBKDF2(key, salt.encode(), dkLen=32, count=1000000)
-                try:
-                    decrypted_file_contents_bytes = base64.b64decode(file_contents)
-                    decrypted_file_contents = rc4_decrypt(decrypted_file_contents_bytes, derived_key)
+    file = st.file_uploader("Upload File", type=["txt", "pdf"])
+    if st.button(mode):
+        if not key:
+            st.error("Please enter a key")
+        elif not file:
+            st.error("Please upload a file")
+        else:
+            file_contents = file.read()
+            derived_key = PBKDF2(key, salt.encode(), dkLen=32, count=1000000)
+            try:
+                decrypted_file_contents_bytes = base64.b64decode(file_contents)
+                decrypted_file_contents = rc4_decrypt(decrypted_file_contents_bytes, derived_key)
+                file_type = file.type.split('/')[-1]  # get the file type
+                if file_type == 'txt':
                     try:
                         decrypted_text = decrypted_file_contents.decode()
                         st.text_area("Decrypted File", value=decrypted_text, height=200)
                     except UnicodeDecodeError:
                         st.error("Decryption produced binary data, unable to decode as text.")
-                except base64.binascii.Error as e:
-                    st.error("Invalid base64 encoded file. Please check the input and try again.")
+                elif file_type == 'pdf':
+                    st.download_button(
+                        label="Download Decrypted File",
+                        data=BytesIO(decrypted_file_contents),
+                        file_name="decrypted_file.pdf",
+                        mime="application/pdf"
+                    )
+                elif file_type == 'jpg' or file_type == 'png':
+                    st.image(decrypted_file_contents)
+                else:
+                    st.error("Unsupported file type.")
+            except base64.binascii.Error as e:
+                st.error("Invalid base64 encoded file. Please check the input and try again.")
+
 
 if __name__ == "__main__":
     main()
