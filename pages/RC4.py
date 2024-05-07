@@ -79,7 +79,7 @@ def main():
                 st.error("Please upload a file")
             else:
                 file_contents = file.read()
-                derived_key = PBKDF2(key, salt.encode(), dkLen=32, count=1000000)
+                derived_key = PBKDF2(key, salt.encode(), dkLen=16, count=1000000)
                 try:
                     decrypted_file_contents_bytes = base64.b64decode(file_contents)
                     decrypted_file_contents = rc4_decrypt(decrypted_file_contents_bytes, derived_key)
